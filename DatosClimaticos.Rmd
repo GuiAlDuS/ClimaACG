@@ -1,0 +1,136 @@
+---
+title: "Datos climáticos históricos de ACG"
+output: github_document
+---
+
+```{r}
+library("googlesheets")
+library("dplyr")
+library("lubridate")
+library("ggplot2")
+```
+A leer GoogleSheet con los datos del ACG y cargar datos de Estación Santa Rosa:
+```{r}
+SR <- gs_title("EstacionesACG")
+SantaRosa <- SR %>% gs_read(ws = "StaRosa")
+```
+Estructura de la tabla importada:
+```{r}
+str(SantaRosa)
+```
+
+
+Crear columna de fecha:
+```{r}
+SantaRosa$fecha <- ymd(paste(SantaRosa$anno,SantaRosa$mes,SantaRosa$dia, sep = '/'))
+```
+Notese que "Lluvia" se importó como tipo "character", hay que convertirla a "numeric":
+```{r}
+SantaRosa$Lluvia <- as.numeric(SantaRosa$Lluvia)
+```
+
+Tipos de datos:
+```{r}
+str(SantaRosa)
+```
+
+Transformar las temperaturas a centígrados:
+Primero hacer función de transformación
+
+```{r}
+FaC <- function(x, y) {
+  ifelse (x == 'F', (y - 32) * (5/9), y)
+}
+```
+
+Ahora hacer la transformación para temperatura máxima (Tmax) y mínima (Tmin):
+```{r}
+SantaRosa$TmaxC <- FaC(SantaRosa$Unid_T, SantaRosa$Tmax)
+SantaRosa$TminC <- FaC(SantaRosa$Unid_T, SantaRosa$Tmin)
+```
+
+Revisar rango de valores a través de un histograma.
+
+Lluvia:
+```{r}
+ggplot(SantaRosa) + geom_histogram(aes(x=Lluvia), binwidth = 10)
+```
+```{r}
+summary(SantaRosa$Lluvia)
+```
+
+Temperatura máxima:
+```{r}
+ggplot(SantaRosa) + geom_histogram(aes(x=TmaxC), binwidth = 10)
+```
+```{r}
+summary(SantaRosa$TmaxC)
+```
+
+
+Temperatura mínima:
+```{r}
+ggplot(SantaRosa) + geom_histogram(aes(x=TminC), binwidth = 10)
+```
+```{r}
+summary(SantaRosa$TminC)
+```
+
+Los valores de más de 100 C se asumen son valores donde no se les puso el decimal, por lo que hay que hacer una función que seleccione esos valores y los divida entre 10.
+```{r}
+deci <- function(x) {
+  ifelse (x > 100, x/10, x)
+}
+```
+
+Se aplica la función a las columnas TmaxC y TminC:
+```{r}
+SantaRosa$TmaxC <- deci(SantaRosa$TmaxC)
+SantaRosa$TminC <- deci(SantaRosa$TminC)
+```
+
+Comprobar cambios con nuevos histogramas:
+
+```{r}
+ggplot(SantaRosa) + geom_histogram(aes(x=TminC), binwidth = 1)
+```
+
+```{r}
+ggplot(SantaRosa) + geom_histogram(aes(x=TmaxC), binwidth = 1)
+```
+
+```{r}
+summary(SantaRosa$TmaxC)
+```
+
+Revisar años con datos:
+```{r}
+annosdatos <- SantaRosa %>% group_by(year(fecha)) %>% summarise(n())
+```
+
+Tabla con número de entradas por año:
+```{r}
+annosdatos
+```
+
+Revisar número de meses por año:
+```{r}
+mesaanodatos <- SantaRosa %>% group_by(year(fecha), month(fecha)) %>% summarise(n())
+colnames(mesaanodatos)[3] <- "registros"
+```
+
+Tabla con número de entradas por mes y año:
+```{r}
+mesaanodatos
+```
+
+Seleccionar meses y años con menos de 28 registros:
+```{r}
+meseslt28 <- mesaanodatos %>% filter(registros < 28)
+```
+
+Tabla con resultados:
+```{r}
+meseslt28
+```
+

@@ -30,6 +30,9 @@ library("lubridate")
 
 ``` r
 library("ggplot2")
+library("kableExtra")
+library("knitr")
+options(knitr.table.format = "latex") 
 ```
 
 A leer GoogleSheet con los datos del ACG y cargar datos de Estación Santa Rosa:
@@ -266,23 +269,8 @@ annosdatos <- SantaRosa %>% group_by(year(fecha)) %>% summarise(n())
 Tabla con número de entradas por año:
 
 ``` r
-annosdatos
+kable(annosdatos)
 ```
-
-    ## # A tibble: 24 x 2
-    ##    `year(fecha)` `n()`
-    ##            <dbl> <int>
-    ##  1          1994   188
-    ##  2          1995   344
-    ##  3          1996   285
-    ##  4          1997   253
-    ##  5          1998   252
-    ##  6          1999    33
-    ##  7          2000   126
-    ##  8          2001   378
-    ##  9          2002   376
-    ## 10          2003   377
-    ## # ... with 14 more rows
 
 Revisar número de meses por año:
 
@@ -294,24 +282,8 @@ colnames(mesaanodatos)[3] <- "registros"
 Tabla con número de entradas por mes y año:
 
 ``` r
-mesaanodatos
+kable(mesaanodatos)
 ```
-
-    ## # A tibble: 242 x 3
-    ## # Groups:   year(fecha) [?]
-    ##    `year(fecha)` `month(fecha)` registros
-    ##            <dbl>          <dbl>     <int>
-    ##  1          1994              4        30
-    ##  2          1994              5         1
-    ##  3          1994              6        30
-    ##  4          1994              7        32
-    ##  5          1994              8        32
-    ##  6          1994              9         1
-    ##  7          1994             11        30
-    ##  8          1994             12        32
-    ##  9          1995              1        32
-    ## 10          1995              2        29
-    ## # ... with 232 more rows
 
 Seleccionar meses y años con menos de 28 registros:
 
@@ -322,24 +294,5 @@ meseslt28 <- mesaanodatos %>% filter(registros < 28)
 Tabla con resultados:
 
 ``` r
-meseslt28
+kable(meseslt28)
 ```
-
-    ## # A tibble: 14 x 3
-    ## # Groups:   year(fecha) [10]
-    ##    `year(fecha)` `month(fecha)` registros
-    ##            <dbl>          <dbl>     <int>
-    ##  1          1994              5         1
-    ##  2          1994              9         1
-    ##  3          1995              5         1
-    ##  4          1996              2         1
-    ##  5          1997              1         1
-    ##  6          1997             12         1
-    ##  7          1999              2         1
-    ##  8          2000              2         1
-    ##  9          2006              3         1
-    ## 10          2009              1         1
-    ## 11          2009             10         1
-    ## 12          2011              8         1
-    ## 13          2011             12         1
-    ## 14          2016             11         1

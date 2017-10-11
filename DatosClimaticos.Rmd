@@ -1,6 +1,7 @@
 ---
 title: "Datos climáticos históricos de ACG"
 output: github_document
+always_allow_html: yes
 ---
 
 ```{r}
@@ -8,6 +9,9 @@ library("googlesheets")
 library("dplyr")
 library("lubridate")
 library("ggplot2")
+library("kableExtra")
+library("knitr")
+options(knitr.table.format = "latex") 
 ```
 A leer GoogleSheet con los datos del ACG y cargar datos de Estación Santa Rosa:
 ```{r}
@@ -110,7 +114,7 @@ annosdatos <- SantaRosa %>% group_by(year(fecha)) %>% summarise(n())
 
 Tabla con número de entradas por año:
 ```{r}
-annosdatos
+kable(annosdatos)
 ```
 
 Revisar número de meses por año:
@@ -121,7 +125,7 @@ colnames(mesaanodatos)[3] <- "registros"
 
 Tabla con número de entradas por mes y año:
 ```{r}
-mesaanodatos
+kable(mesaanodatos)
 ```
 
 Seleccionar meses y años con menos de 28 registros:
@@ -131,6 +135,6 @@ meseslt28 <- mesaanodatos %>% filter(registros < 28)
 
 Tabla con resultados:
 ```{r}
-meseslt28
+kable(meseslt28)
 ```
 

@@ -6,12 +6,9 @@ always_allow_html: yes
 
 ```{r}
 library("googlesheets")
-library("dplyr")
+library("tidyverse")
 library("lubridate")
 library("ggplot2")
-library("kableExtra")
-library("knitr")
-options(knitr.table.format = "latex") 
 ```
 A leer GoogleSheet con los datos del ACG y cargar datos de Estación Santa Rosa:
 ```{r}
@@ -114,7 +111,7 @@ annosdatos <- SantaRosa %>% group_by(year(fecha)) %>% summarise(n())
 
 Tabla con número de entradas por año:
 ```{r}
-kable(annosdatos)
+annosdatos
 ```
 
 Revisar número de meses por año:
@@ -125,7 +122,7 @@ colnames(mesaanodatos)[3] <- "registros"
 
 Tabla con número de entradas por mes y año:
 ```{r}
-kable(mesaanodatos)
+mesaanodatos
 ```
 
 Seleccionar meses y años con menos de 28 registros:
@@ -135,6 +132,57 @@ meseslt28 <- mesaanodatos %>% filter(registros < 28)
 
 Tabla con resultados:
 ```{r}
-kable(meseslt28)
+meseslt28
 ```
+
+Ordenar tabla por fecha:
+```{r}
+SantaRosa_final <- SantaRosa[order(SantaRosa$fecha),]
+SantaRosa_final <- select(SantaRosa_final, fecha, TmaxC, TminC, Lluvia)
+```
+
+Exportar resultados a CSV:
+```{r}
+write_csv(SantaRosa_final, "SantaRosa.csv")
+```
+
+#Graficos#
+
+Preparación para un gráfico de acumulado de lluvias por año:
+```{r}
+SantaRosa_final$djuliano <- yday(SantaRosa_final$fecha)
+
+SantaRosa_graficos <- SantaRosa_final %>% replace_na(list(Lluvia = 0))
+
+SantaRosa_graficos <- SantaRosa_graficos %>% group_by(year(fecha)) %>% mutate(LluviaAcumulada = cumsum(Lluvia))
+```
+
+Gráfico de lluvia acumulada por año:
+```{r}
+ggplot(SantaRosa_graficos, aes(x = djuliano, y = LluviaAcumulada)) +
+  geom_line(aes(group = factor(year(fecha))), size = 0.1)
+
+```
+
+Totales de precipitación por año:
+```{r}
+colnames(SantaRosa_graficos)[6] <- "Anno"
+LluviaTotalAnno <- SantaRosa_graficos %>% group_by(Anno) %>% summarise(sum(Lluvia))
+colnames(LluviaTotalAnno)[2] <- "TotalLluvia"
+
+ggplot(LluviaTotalAnno, aes(Anno, TotalLluvia)) +
+  geom_col()
+
+```
+
+
+
+Promedio de temperaturas por mes:
+```{r}
+
+ggplot(SantaRosa_final, year(fecha), TmaxC) +
+  geom_boxplot()
+```
+
+
 

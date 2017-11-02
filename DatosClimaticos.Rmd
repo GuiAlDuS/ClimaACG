@@ -5,11 +5,18 @@ always_allow_html: yes
 ---
 
 ```{r}
+rm(list = ls())
+```
+
+
+```{r}
 library("googlesheets")
 library("tidyverse")
 library("lubridate")
 library("ggplot2")
 ```
+##Estación Santa Rosa##
+
 A leer GoogleSheet con los datos del ACG y cargar datos de Estación Santa Rosa:
 ```{r}
 SR <- gs_title("EstacionesACG")
@@ -25,7 +32,12 @@ Crear columna de fecha:
 ```{r}
 SantaRosa$fecha <- ymd(paste(SantaRosa$anno,SantaRosa$mes,SantaRosa$dia, sep = '/'))
 ```
-Notese que "Lluvia" se importó como tipo "character", hay que convertirla a "numeric":
+Notese que "Lluvia" se importó como tipo "character", hay que convertirla a "numeric", pero primero hay que convertir el separador de decimales de coma a punto:
+```{r}
+SantaRosa$Lluvia <- gsub(",", ".", SantaRosa$Lluvia, fixed = T)
+```
+
+
 ```{r}
 SantaRosa$Lluvia <- as.numeric(SantaRosa$Lluvia)
 ```
@@ -104,55 +116,46 @@ ggplot(SantaRosa) + geom_histogram(aes(x=TmaxC), binwidth = 1)
 summary(SantaRosa$TmaxC)
 ```
 
-Revisar años con datos:
+
+#Estadísticas generales para los años con datos completos o casi completos#
+
+Hacer vector con los años que se tienen datos completos:
 ```{r}
-annosdatos <- SantaRosa %>% group_by(year(fecha)) %>% summarise(n())
+AnnosCompletosSR <- as.factor(c(1994:1997,2001,2002, 2005:2008,2010))
 ```
 
-Tabla con número de entradas por año:
+Seleccionar los valores para esos años:
 ```{r}
-annosdatos
+SantaRosa_AnnosCompletos <- SantaRosa %>% filter(anno %in% AnnosCompletosSR)
 ```
 
-Revisar número de meses por año:
+Calcular totales de lluvia por año completo:
 ```{r}
-mesaanodatos <- SantaRosa %>% group_by(year(fecha), month(fecha)) %>% summarise(n())
-colnames(mesaanodatos)[3] <- "registros"
+TotalLluviaAnnos <- SantaRosa_AnnosCompletos %>% replace_na(list(Lluvia = 0)) %>% 
+  group_by(anno) %>% summarise(LluviaAnno = sum(Lluvia))
 ```
 
-Tabla con número de entradas por mes y año:
+Tabla con totales de lluvia por año y promedio de años con mediciones:
 ```{r}
-mesaanodatos
+TotalLluviaAnnos
+```
+```{r}
+mean(TotalLluviaAnnos$LluviaAnno)
 ```
 
-Seleccionar meses y años con menos de 28 registros:
-```{r}
-meseslt28 <- mesaanodatos %>% filter(registros < 28)
-```
-
-Tabla con resultados:
-```{r}
-meseslt28
-```
-
-Ordenar tabla por fecha:
-```{r}
-SantaRosa_final <- SantaRosa[order(SantaRosa$fecha),]
-SantaRosa_final <- select(SantaRosa_final, fecha, TmaxC, TminC, Lluvia)
-```
-
-Exportar resultados a CSV:
-```{r}
-write_csv(SantaRosa_final, "SantaRosa.csv")
-```
 
 #Graficos#
 
+Ordenar por fecha:
+```{r}
+SantaRosa_AnnosCompletos <- SantaRosa_AnnosCompletos[order(SantaRosa_AnnosCompletos$fecha),]
+```
+
 Preparación para un gráfico de acumulado de lluvias por año:
 ```{r}
-SantaRosa_final$djuliano <- yday(SantaRosa_final$fecha)
+SantaRosa_AnnosCompletos$djuliano <- yday(SantaRosa_AnnosCompletos$fecha)
 
-SantaRosa_graficos <- SantaRosa_final %>% replace_na(list(Lluvia = 0))
+SantaRosa_graficos <- SantaRosa_AnnosCompletos %>% replace_na(list(Lluvia = 0))
 
 SantaRosa_graficos <- SantaRosa_graficos %>% group_by(year(fecha)) %>% mutate(LluviaAcumulada = cumsum(Lluvia))
 ```
@@ -160,29 +163,25 @@ SantaRosa_graficos <- SantaRosa_graficos %>% group_by(year(fecha)) %>% mutate(Ll
 Gráfico de lluvia acumulada por año:
 ```{r}
 ggplot(SantaRosa_graficos, aes(x = djuliano, y = LluviaAcumulada)) +
-  geom_line(aes(group = factor(year(fecha))), size = 0.1)
+  geom_line(aes(group = factor(anno), colour = factor(anno)))
 
 ```
-
-Totales de precipitación por año:
-```{r}
-colnames(SantaRosa_graficos)[6] <- "Anno"
-LluviaTotalAnno <- SantaRosa_graficos %>% group_by(Anno) %>% summarise(sum(Lluvia))
-colnames(LluviaTotalAnno)[2] <- "TotalLluvia"
-
-ggplot(LluviaTotalAnno, aes(Anno, TotalLluvia)) +
-  geom_col()
-
-```
-
 
 
 Promedio de temperaturas por mes:
 ```{r}
-
-ggplot(SantaRosa_final, year(fecha), TmaxC) +
-  geom_boxplot()
+ggplot(SantaRosa_graficos, aes(factor(anno), TmaxC)) +
+  geom_boxplot() + geom_violin()
 ```
 
+Ordenar tabla por fecha:
+```{r}
 
+SantaRosa_final <- select(SantaRosa_final, fecha, TmaxC, TminC, Lluvia)
+```
+
+Exportar resultados a CSV:
+```{r}
+write_csv(SantaRosa_final, "SantaRosa.csv")
+```
 

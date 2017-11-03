@@ -158,7 +158,8 @@ Revisar rango de valores a través de un histograma.
 Lluvia:
 
 ``` r
-ggplot(SantaRosa) + geom_histogram(aes(x=Lluvia), binwidth = 10)
+ggplot(SantaRosa) + geom_histogram(aes(x=Lluvia), binwidth = 10) +
+  labs(x = "Lluvia diaria", y = "Conteo de registros")
 ```
 
 ![](DatosClimaticos_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-11-1.png)
@@ -173,7 +174,8 @@ summary(SantaRosa$Lluvia)
 Temperatura máxima:
 
 ``` r
-ggplot(SantaRosa) + geom_histogram(aes(x=TmaxC), binwidth = 10)
+ggplot(SantaRosa) + geom_histogram(aes(x=TmaxC), binwidth = 10) + 
+  labs(x = "Temperatura máxima diaria", y = "Conteo de registros")
 ```
 
 ![](DatosClimaticos_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-13-1.png)
@@ -188,7 +190,8 @@ summary(SantaRosa$TmaxC)
 Temperatura mínima:
 
 ``` r
-ggplot(SantaRosa) + geom_histogram(aes(x=TminC), binwidth = 10)
+ggplot(SantaRosa) + geom_histogram(aes(x=TminC), binwidth = 10) + 
+  labs(x = "Temperatura mínima diaria", y = "Conteo de registros")
 ```
 
 ![](DatosClimaticos_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-15-1.png)
@@ -218,13 +221,15 @@ SantaRosa$TminC <- deci(SantaRosa$TminC)
 Comprobar cambios con nuevos histogramas:
 
 ``` r
-ggplot(SantaRosa) + geom_histogram(aes(x=TminC), binwidth = 1)
+ggplot(SantaRosa) + geom_histogram(aes(x=TminC), binwidth = 1) + 
+  labs(x = "Temperatura mínima diaria", y = "Conteo de registros")
 ```
 
 ![](DatosClimaticos_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-19-1.png)
 
 ``` r
-ggplot(SantaRosa) + geom_histogram(aes(x=TmaxC), binwidth = 1)
+ggplot(SantaRosa) + geom_histogram(aes(x=TmaxC), binwidth = 1) +
+  labs(x = "Temperatura máxima diaria", y = "Conteo de registros")
 ```
 
 ![](DatosClimaticos_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-20-1.png)
@@ -359,7 +364,8 @@ Gráfico de lluvia acumulada por año:
 
 ``` r
 ggplot(SantaRosa_graficos, aes(x = djuliano, y = LluviaAcumulada)) +
-  geom_line(aes(group = factor(anno), colour = factor(anno)))
+  geom_line(aes(group = factor(anno), colour = factor(anno))) +
+  labs(colour = "Años", x = "Días del año", y = "Lluvia diaria acumulada")
 ```
 
 ![](DatosClimaticos_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-32-1.png)
@@ -368,14 +374,14 @@ Promedio de temperaturas por mes:
 
 ``` r
 ggplot(SantaRosa_graficos, aes(factor(anno), TmaxC)) +
-  geom_boxplot()
+  geom_boxplot() + labs(x = "Año", y = "Temperatura máxima diaria")
 ```
 
 ![](DatosClimaticos_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-33-1.png)
 
 ``` r
 ggplot(SantaRosa_graficos, aes(factor(anno), TminC)) +
-  geom_boxplot()
+  geom_boxplot() + labs(x = "Año", y = "Temperatura mínima diaria")
 ```
 
 ![](DatosClimaticos_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-34-1.png)

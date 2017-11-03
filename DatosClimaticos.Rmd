@@ -67,7 +67,8 @@ Revisar rango de valores a través de un histograma.
 
 Lluvia:
 ```{r warning=FALSE}
-ggplot(SantaRosa) + geom_histogram(aes(x=Lluvia), binwidth = 10)
+ggplot(SantaRosa) + geom_histogram(aes(x=Lluvia), binwidth = 10) +
+  labs(x = "Lluvia diaria", y = "Conteo de registros")
 ```
 ```{r}
 summary(SantaRosa$Lluvia)
@@ -75,7 +76,8 @@ summary(SantaRosa$Lluvia)
 
 Temperatura máxima:
 ```{r warning=FALSE}
-ggplot(SantaRosa) + geom_histogram(aes(x=TmaxC), binwidth = 10)
+ggplot(SantaRosa) + geom_histogram(aes(x=TmaxC), binwidth = 10) + 
+  labs(x = "Temperatura máxima diaria", y = "Conteo de registros")
 ```
 ```{r}
 summary(SantaRosa$TmaxC)
@@ -84,7 +86,8 @@ summary(SantaRosa$TmaxC)
 
 Temperatura mínima:
 ```{r warning=FALSE}
-ggplot(SantaRosa) + geom_histogram(aes(x=TminC), binwidth = 10)
+ggplot(SantaRosa) + geom_histogram(aes(x=TminC), binwidth = 10) + 
+  labs(x = "Temperatura mínima diaria", y = "Conteo de registros")
 ```
 ```{r}
 summary(SantaRosa$TminC)
@@ -106,11 +109,13 @@ SantaRosa$TminC <- deci(SantaRosa$TminC)
 Comprobar cambios con nuevos histogramas:
 
 ```{r warning=FALSE}
-ggplot(SantaRosa) + geom_histogram(aes(x=TminC), binwidth = 1)
+ggplot(SantaRosa) + geom_histogram(aes(x=TminC), binwidth = 1) + 
+  labs(x = "Temperatura mínima diaria", y = "Conteo de registros")
 ```
 
 ```{r warning=FALSE}
-ggplot(SantaRosa) + geom_histogram(aes(x=TmaxC), binwidth = 1)
+ggplot(SantaRosa) + geom_histogram(aes(x=TmaxC), binwidth = 1) +
+  labs(x = "Temperatura máxima diaria", y = "Conteo de registros")
 ```
 
 ```{r}
@@ -182,19 +187,20 @@ SantaRosa_graficos <- SantaRosa_graficos %>% group_by(year(fecha)) %>% mutate(Ll
 Gráfico de lluvia acumulada por año:
 ```{r warning=FALSE}
 ggplot(SantaRosa_graficos, aes(x = djuliano, y = LluviaAcumulada)) +
-  geom_line(aes(group = factor(anno), colour = factor(anno)))
+  geom_line(aes(group = factor(anno), colour = factor(anno))) +
+  labs(colour = "Años", x = "Días del año", y = "Lluvia diaria acumulada")
 ```
 
 
 Promedio de temperaturas por mes:
 ```{r warning=FALSE}
 ggplot(SantaRosa_graficos, aes(factor(anno), TmaxC)) +
-  geom_boxplot()
+  geom_boxplot() + labs(x = "Año", y = "Temperatura máxima diaria")
 ```
 
 ```{r warning=FALSE}
 ggplot(SantaRosa_graficos, aes(factor(anno), TminC)) +
-  geom_boxplot()
+  geom_boxplot() + labs(x = "Año", y = "Temperatura mínima diaria")
 ```
 
 Seleccionar tabla final y xportar resultados a CSV:

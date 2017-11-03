@@ -153,7 +153,6 @@ mean(TotalLluviaAnnos$LluviaAnno)
 Los días más lluviosos:
 ```{r}
 SantaRosa_AnnosCompletos %>% select(fecha, Lluvia, TmaxC, TminC) %>% arrange(desc(Lluvia)) %>% slice(1:5)
-#tail(sort(SantaRosa_AnnosCompletos$Lluvia), 5)
 ```
 
 Los días más calurosos:

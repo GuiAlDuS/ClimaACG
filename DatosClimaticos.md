@@ -307,10 +307,6 @@ SantaRosa_AnnosCompletos %>% select(fecha, Lluvia, TmaxC, TminC) %>% arrange(des
     ## 4 2001-11-02  201.2 24.44444 21.11111
     ## 5 2007-05-31  194.2 26.00000 24.00000
 
-``` r
-#tail(sort(SantaRosa_AnnosCompletos$Lluvia), 5)
-```
-
 Los días más calurosos:
 
 ``` r

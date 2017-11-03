@@ -66,7 +66,7 @@ SantaRosa$TminC <- FaC(SantaRosa$Unid_T, SantaRosa$Tmin)
 Revisar rango de valores a través de un histograma.
 
 Lluvia:
-```{r}
+```{r warning=FALSE}
 ggplot(SantaRosa) + geom_histogram(aes(x=Lluvia), binwidth = 10)
 ```
 ```{r}
@@ -74,7 +74,7 @@ summary(SantaRosa$Lluvia)
 ```
 
 Temperatura máxima:
-```{r}
+```{r warning=FALSE}
 ggplot(SantaRosa) + geom_histogram(aes(x=TmaxC), binwidth = 10)
 ```
 ```{r}
@@ -83,7 +83,7 @@ summary(SantaRosa$TmaxC)
 
 
 Temperatura mínima:
-```{r}
+```{r warning=FALSE}
 ggplot(SantaRosa) + geom_histogram(aes(x=TminC), binwidth = 10)
 ```
 ```{r}
@@ -105,11 +105,11 @@ SantaRosa$TminC <- deci(SantaRosa$TminC)
 
 Comprobar cambios con nuevos histogramas:
 
-```{r}
+```{r warning=FALSE}
 ggplot(SantaRosa) + geom_histogram(aes(x=TminC), binwidth = 1)
 ```
 
-```{r}
+```{r warning=FALSE}
 ggplot(SantaRosa) + geom_histogram(aes(x=TmaxC), binwidth = 1)
 ```
 
@@ -180,19 +180,19 @@ SantaRosa_graficos <- SantaRosa_graficos %>% group_by(year(fecha)) %>% mutate(Ll
 ```
 
 Gráfico de lluvia acumulada por año:
-```{r}
+```{r warning=FALSE}
 ggplot(SantaRosa_graficos, aes(x = djuliano, y = LluviaAcumulada)) +
   geom_line(aes(group = factor(anno), colour = factor(anno)))
 ```
 
 
 Promedio de temperaturas por mes:
-```{r}
+```{r warning=FALSE}
 ggplot(SantaRosa_graficos, aes(factor(anno), TmaxC)) +
   geom_boxplot()
 ```
 
-```{r}
+```{r warning=FALSE}
 ggplot(SantaRosa_graficos, aes(factor(anno), TminC)) +
   geom_boxplot()
 ```

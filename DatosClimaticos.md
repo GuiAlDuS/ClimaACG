@@ -8,50 +8,10 @@ rm(list = ls())
 ``` r
 library("googlesheets")
 library("tidyverse")
-```
-
-    ## Loading tidyverse: ggplot2
-    ## Loading tidyverse: tibble
-    ## Loading tidyverse: tidyr
-    ## Loading tidyverse: readr
-    ## Loading tidyverse: purrr
-    ## Loading tidyverse: dplyr
-
-    ## Conflicts with tidy packages ----------------------------------------------
-
-    ## filter(): dplyr, stats
-    ## lag():    dplyr, stats
-
-``` r
 library("lubridate")
-```
-
-    ## 
-    ## Attaching package: 'lubridate'
-
-    ## The following object is masked from 'package:base':
-    ## 
-    ##     date
-
-``` r
 library("ggplot2")
 library("plotly")
 ```
-
-    ## 
-    ## Attaching package: 'plotly'
-
-    ## The following object is masked from 'package:ggplot2':
-    ## 
-    ##     last_plot
-
-    ## The following object is masked from 'package:stats':
-    ## 
-    ##     filter
-
-    ## The following object is masked from 'package:graphics':
-    ## 
-    ##     layout
 
 Estación Santa Rosa
 -------------------
@@ -201,8 +161,6 @@ Lluvia:
 ggplot(SantaRosa) + geom_histogram(aes(x=Lluvia), binwidth = 10)
 ```
 
-    ## Warning: Removed 1267 rows containing non-finite values (stat_bin).
-
 ![](DatosClimaticos_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-11-1.png)
 
 ``` r
@@ -218,8 +176,6 @@ Temperatura máxima:
 ggplot(SantaRosa) + geom_histogram(aes(x=TmaxC), binwidth = 10)
 ```
 
-    ## Warning: Removed 2738 rows containing non-finite values (stat_bin).
-
 ![](DatosClimaticos_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-13-1.png)
 
 ``` r
@@ -234,8 +190,6 @@ Temperatura mínima:
 ``` r
 ggplot(SantaRosa) + geom_histogram(aes(x=TminC), binwidth = 10)
 ```
-
-    ## Warning: Removed 2729 rows containing non-finite values (stat_bin).
 
 ![](DatosClimaticos_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-15-1.png)
 
@@ -267,15 +221,11 @@ Comprobar cambios con nuevos histogramas:
 ggplot(SantaRosa) + geom_histogram(aes(x=TminC), binwidth = 1)
 ```
 
-    ## Warning: Removed 2729 rows containing non-finite values (stat_bin).
-
 ![](DatosClimaticos_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-19-1.png)
 
 ``` r
 ggplot(SantaRosa) + geom_histogram(aes(x=TmaxC), binwidth = 1)
 ```
-
-    ## Warning: Removed 2738 rows containing non-finite values (stat_bin).
 
 ![](DatosClimaticos_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-20-1.png)
 
@@ -412,8 +362,6 @@ ggplot(SantaRosa_graficos, aes(x = djuliano, y = LluviaAcumulada)) +
   geom_line(aes(group = factor(anno), colour = factor(anno)))
 ```
 
-    ## Warning: Removed 16 rows containing missing values (geom_path).
-
 ![](DatosClimaticos_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-32-1.png)
 
 Promedio de temperaturas por mes:
@@ -423,16 +371,12 @@ ggplot(SantaRosa_graficos, aes(factor(anno), TmaxC)) +
   geom_boxplot()
 ```
 
-    ## Warning: Removed 1797 rows containing non-finite values (stat_boxplot).
-
 ![](DatosClimaticos_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-33-1.png)
 
 ``` r
 ggplot(SantaRosa_graficos, aes(factor(anno), TminC)) +
   geom_boxplot()
 ```
-
-    ## Warning: Removed 1792 rows containing non-finite values (stat_boxplot).
 
 ![](DatosClimaticos_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-34-1.png)
 

@@ -4,12 +4,12 @@ output: github_document
 always_allow_html: yes
 ---
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 rm(list = ls())
 ```
 
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 library("googlesheets")
 library("tidyverse")
 library("lubridate")
@@ -136,12 +136,30 @@ TotalLluviaAnnos <- SantaRosa_AnnosCompletos %>% replace_na(list(Lluvia = 0)) %>
   group_by(anno) %>% summarise(LluviaAnno = sum(Lluvia))
 ```
 
-Tabla con totales de lluvia por año y promedio de años con mediciones:
+Tabla con totales de lluvia por año:
 ```{r}
 TotalLluviaAnnos
 ```
+Promedio de lluvia anual para la estación Santa Rosa:
 ```{r}
 mean(TotalLluviaAnnos$LluviaAnno)
+```
+
+Los días más lluviosos:
+```{r}
+SantaRosa_AnnosCompletos %>% select(fecha, Lluvia, TmaxC, TminC) %>% arrange(desc(Lluvia)) %>% slice(1:5)
+#tail(sort(SantaRosa_AnnosCompletos$Lluvia), 5)
+```
+
+Los días más calurosos:
+
+```{r}
+SantaRosa_AnnosCompletos %>% select(fecha, Lluvia, TmaxC, TminC) %>% arrange(desc(TmaxC)) %>% slice(1:5)
+```
+
+Los días menos calurosos:
+```{r}
+SantaRosa_AnnosCompletos %>% select(fecha, Lluvia, TmaxC, TminC)%>% arrange(TminC) %>% slice(1:5)
 ```
 
 
@@ -163,25 +181,20 @@ SantaRosa_graficos <- SantaRosa_graficos %>% group_by(year(fecha)) %>% mutate(Ll
 
 Gráfico de lluvia acumulada por año:
 ```{r}
-LluviaAcumG <- ggplot(SantaRosa_graficos, aes(x = djuliano, y = LluviaAcumulada)) +
+ggplot(SantaRosa_graficos, aes(x = djuliano, y = LluviaAcumulada)) +
   geom_line(aes(group = factor(anno), colour = factor(anno)))
-ggplotly()
-
 ```
 
 
 Promedio de temperaturas por mes:
 ```{r}
-TmaxG <- ggplot(SantaRosa_graficos, aes(factor(anno), TmaxC)) +
+ggplot(SantaRosa_graficos, aes(factor(anno), TmaxC)) +
   geom_boxplot()
-ggplotly()
 ```
 
 ```{r}
-TminG <- ggplot(SantaRosa_graficos, aes(factor(anno), TminC)) +
+ggplot(SantaRosa_graficos, aes(factor(anno), TminC)) +
   geom_boxplot()
-ggplotly()
-
 ```
 
 Seleccionar tabla final y xportar resultados a CSV:

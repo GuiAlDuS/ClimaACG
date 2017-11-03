@@ -14,6 +14,7 @@ library("googlesheets")
 library("tidyverse")
 library("lubridate")
 library("ggplot2")
+library("plotly")
 ```
 ##Estación Santa Rosa##
 
@@ -162,26 +163,31 @@ SantaRosa_graficos <- SantaRosa_graficos %>% group_by(year(fecha)) %>% mutate(Ll
 
 Gráfico de lluvia acumulada por año:
 ```{r}
-ggplot(SantaRosa_graficos, aes(x = djuliano, y = LluviaAcumulada)) +
+LluviaAcumG <- ggplot(SantaRosa_graficos, aes(x = djuliano, y = LluviaAcumulada)) +
   geom_line(aes(group = factor(anno), colour = factor(anno)))
+ggplotly()
 
 ```
 
 
 Promedio de temperaturas por mes:
 ```{r}
-ggplot(SantaRosa_graficos, aes(factor(anno), TmaxC)) +
-  geom_boxplot() + geom_violin()
+TmaxG <- ggplot(SantaRosa_graficos, aes(factor(anno), TmaxC)) +
+  geom_boxplot()
+ggplotly()
 ```
 
-Ordenar tabla por fecha:
 ```{r}
+TminG <- ggplot(SantaRosa_graficos, aes(factor(anno), TminC)) +
+  geom_boxplot()
+ggplotly()
 
-SantaRosa_final <- select(SantaRosa_final, fecha, TmaxC, TminC, Lluvia)
 ```
 
-Exportar resultados a CSV:
+Seleccionar tabla final y xportar resultados a CSV:
 ```{r}
+SantaRosa_final <- select(SantaRosa_AnnosCompletos, fecha, TmaxC, TminC, Lluvia)
+
 write_csv(SantaRosa_final, "SantaRosa.csv")
 ```
 

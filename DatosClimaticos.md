@@ -336,7 +336,7 @@ SantaRosa_AnnosCompletos %>% select(fecha, Lluvia, TmaxC, TminC)%>% arrange(Tmin
     ## 4 2001-01-18      0 31.11111 15.555556
     ## 5 2010-12-20      0 31.11111 16.666667
 
-Graficos
+Gráficos
 ========
 
 Ordenar por fecha:

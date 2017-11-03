@@ -163,7 +163,7 @@ SantaRosa_AnnosCompletos %>% select(fecha, Lluvia, TmaxC, TminC)%>% arrange(Tmin
 ```
 
 
-#Graficos#
+#Gráficos#
 
 Ordenar por fecha:
 ```{r}

@@ -1,6 +1,8 @@
 ---
 title: "Datos climáticos históricos de ACG"
-output: github_document
+output: 
+  github_document:
+  toc: true
 always_allow_html: yes
 ---
 
@@ -207,5 +209,105 @@ Seleccionar tabla final y xportar resultados a CSV:
 SantaRosa_final <- select(SantaRosa_AnnosCompletos, fecha, TmaxC, TminC, Lluvia)
 
 write_csv(SantaRosa_final, "SantaRosa.csv")
+```
+
+##Estación Pitilla##
+Leer GoogleSheetes para esta estación:
+```{r}
+Pitilla <- SR %>% gs_read(ws = "Pitilla")
+```
+
+Crear columna de fecha:
+```{r}
+Pitilla$fecha <- ymd(paste(Pitilla$anno,Pitilla$mes,Pitilla$dia, sep = '/'))
+```
+Notese que "Lluvia" se importó como tipo "character", hay que convertirla a "numeric", pero primero hay que convertir el separador de decimales de coma a punto:
+```{r}
+Pitilla$Lluvia <- gsub(",", ".", Pitilla$Lluvia, fixed = T)
+```
+
+```{r}
+Pitilla$Lluvia <- as.numeric(Pitilla$Lluvia)
+```
+
+Transformar las temperaturas a centígrados:
+Primero hacer función de transformación
+
+```{r}
+FaC <- function(x, y) {
+  ifelse (x == 'F', (y - 32) * (5/9), y)
+}
+```
+
+Ahora hacer la transformación para temperatura máxima (Tmax) y mínima (Tmin):
+```{r}
+Pitilla$TmaxC <- FaC(Pitilla$Unid_T, Pitilla$Tmax)
+Pitilla$TminC <- FaC(Pitilla$Unid_T, Pitilla$Tmin)
+```
+
+Revisar rango de valores a través de un histograma.
+
+Lluvia:
+```{r warning=FALSE}
+ggplot(Pitilla) + geom_histogram(aes(x=Lluvia), binwidth = 10) +
+  labs(x = "Lluvia diaria", y = "Conteo de registros")
+```
+
+```{r}
+summary(Pitilla$Lluvia)
+```
+
+Temperatura máxima:
+```{r warning=FALSE}
+ggplot(Pitilla) + geom_histogram(aes(x=TmaxC), binwidth = 10) + 
+  labs(x = "Temperatura máxima diaria", y = "Conteo de registros")
+```
+
+```{r}
+summary(Pitilla$Lluvia)
+```
+
+Temperatura mínima:
+```{r warning=FALSE}
+ggplot(Pitilla) + geom_histogram(aes(x=TminC), binwidth = 10) + 
+  labs(x = "Temperatura máxima diaria", y = "Conteo de registros")
+```
+
+```{r}
+summary(Pitilla$TminC)
+```
+
+Los valores de más de 100 C se asumen son valores donde no se les puso el decimal, por lo que hay que hacer una función que seleccione esos valores y los divida entre 10.
+```{r}
+deci <- function(x) {
+  ifelse (x > 100, x/10, x)
+}
+```
+
+Se aplica la función a las columnas TmaxC y TminC:
+```{r}
+Pitilla$TmaxC <- deci(Pitilla$TmaxC)
+Pitilla$TminC <- deci(Pitilla$TminC)
+```
+
+Comprobar cambios con nuevos histogramas:
+
+```{r warning=FALSE}
+ggplot(Pitilla) + geom_histogram(aes(x=TminC), binwidth = 1) + 
+  labs(x = "Temperatura mínima diaria", y = "Conteo de registros")
+```
+
+
+```{r warning=FALSE}
+ggplot(Pitilla) + geom_histogram(aes(x=TmaxC), binwidth = 1) +
+  labs(x = "Temperatura máxima diaria", y = "Conteo de registros")
+```
+
+```{r}
+summary(Pitilla$TminC)
+```
+
+```{r}
+summary(Pitilla$TmaxC)
 ```
 

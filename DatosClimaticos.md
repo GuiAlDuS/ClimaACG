@@ -22,6 +22,8 @@ A leer GoogleSheet con los datos del ACG y cargar datos de Estación Santa Rosa:
 SR <- gs_title("EstacionesACG")
 ```
 
+    ## Auto-refreshing stale OAuth token.
+
     ## Warning in strptime(x, fmt, tz = "GMT"): unknown timezone 'zone/tz/2017c.
     ## 1.0/zoneinfo/America/Costa_Rica'
 
@@ -185,7 +187,7 @@ summary(SantaRosa$TmaxC)
 ```
 
     ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-    ##   21.11   30.00   33.00  129.43  298.00  461.67    2738
+    ##   21.11   30.00   33.00  129.46  298.00  461.67    2738
 
 Temperatura mínima:
 
@@ -201,7 +203,7 @@ summary(SantaRosa$TminC)
 ```
 
     ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-    ##  -6.111  22.000  23.000  79.043 215.000 379.444    2729
+    ##   15.56   22.00   23.00   79.05  215.00  379.44    2729
 
 Los valores de más de 100 C se asumen son valores donde no se les puso el decimal, por lo que hay que hacer una función que seleccione esos valores y los divida entre 10.
 
@@ -239,7 +241,7 @@ summary(SantaRosa$TmaxC)
 ```
 
     ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-    ##   12.94   29.50   31.11   31.53   33.33   46.17    2738
+    ##   15.72   29.50   31.11   31.53   33.33   46.17    2738
 
 Estadísticas generales para los años con datos completos o casi completos
 =========================================================================
@@ -329,13 +331,13 @@ SantaRosa_AnnosCompletos %>% select(fecha, Lluvia, TmaxC, TminC)%>% arrange(Tmin
 ```
 
     ## # A tibble: 5 x 4
-    ##        fecha Lluvia    TmaxC     TminC
-    ##       <date>  <dbl>    <dbl>     <dbl>
-    ## 1 2008-12-24      0 12.94444 -6.111111
-    ## 2 2007-05-08      0 18.50000 11.277778
-    ## 3 2007-05-09      0 19.05556 11.833333
-    ## 4 2001-01-18      0 31.11111 15.555556
-    ## 5 2010-12-20      0 31.11111 16.666667
+    ##        fecha Lluvia    TmaxC    TminC
+    ##       <date>  <dbl>    <dbl>    <dbl>
+    ## 1 2007-05-08    0.0 18.50000 11.27778
+    ## 2 2007-05-09    0.0 19.05556 11.83333
+    ## 3 2001-01-18    0.0 31.11111 15.55556
+    ## 4 2010-12-20    0.0 31.11111 16.66667
+    ## 5 2001-09-09   28.6 31.11111 17.22222
 
 Gráficos
 ========
@@ -389,3 +391,152 @@ SantaRosa_final <- select(SantaRosa_AnnosCompletos, fecha, TmaxC, TminC, Lluvia)
 
 write_csv(SantaRosa_final, "SantaRosa.csv")
 ```
+
+Estación Pitilla
+----------------
+
+Leer GoogleSheetes para esta estación:
+
+``` r
+Pitilla <- SR %>% gs_read(ws = "Pitilla")
+```
+
+    ## Accessing worksheet titled 'Pitilla'.
+
+    ## Parsed with column specification:
+    ## cols(
+    ##   dia = col_integer(),
+    ##   mes = col_integer(),
+    ##   anno = col_integer(),
+    ##   Lluvia = col_character(),
+    ##   Tmax = col_number(),
+    ##   Tmin = col_number(),
+    ##   Unid_T = col_character(),
+    ##   observ = col_character()
+    ## )
+
+Crear columna de fecha:
+
+``` r
+Pitilla$fecha <- ymd(paste(Pitilla$anno,Pitilla$mes,Pitilla$dia, sep = '/'))
+```
+
+Notese que "Lluvia" se importó como tipo "character", hay que convertirla a "numeric", pero primero hay que convertir el separador de decimales de coma a punto:
+
+``` r
+Pitilla$Lluvia <- gsub(",", ".", Pitilla$Lluvia, fixed = T)
+```
+
+``` r
+Pitilla$Lluvia <- as.numeric(Pitilla$Lluvia)
+```
+
+Transformar las temperaturas a centígrados: Primero hacer función de transformación
+
+``` r
+FaC <- function(x, y) {
+  ifelse (x == 'F', (y - 32) * (5/9), y)
+}
+```
+
+Ahora hacer la transformación para temperatura máxima (Tmax) y mínima (Tmin):
+
+``` r
+Pitilla$TmaxC <- FaC(Pitilla$Unid_T, Pitilla$Tmax)
+Pitilla$TminC <- FaC(Pitilla$Unid_T, Pitilla$Tmin)
+```
+
+Revisar rango de valores a través de un histograma.
+
+Lluvia:
+
+``` r
+ggplot(Pitilla) + geom_histogram(aes(x=Lluvia), binwidth = 10) +
+  labs(x = "Lluvia diaria", y = "Conteo de registros")
+```
+
+![](DatosClimaticos_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-42-1.png)
+
+``` r
+summary(Pitilla$Lluvia)
+```
+
+    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+    ##   0.000   0.200   3.800   9.991  13.000 128.050     131
+
+Temperatura máxima:
+
+``` r
+ggplot(Pitilla) + geom_histogram(aes(x=TmaxC), binwidth = 10) + 
+  labs(x = "Temperatura máxima diaria", y = "Conteo de registros")
+```
+
+![](DatosClimaticos_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-44-1.png)
+
+``` r
+summary(Pitilla$Lluvia)
+```
+
+    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+    ##   0.000   0.200   3.800   9.991  13.000 128.050     131
+
+Temperatura mínima:
+
+``` r
+ggplot(Pitilla) + geom_histogram(aes(x=TminC), binwidth = 10) + 
+  labs(x = "Temperatura máxima diaria", y = "Conteo de registros")
+```
+
+![](DatosClimaticos_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-46-1.png)
+
+``` r
+summary(Pitilla$TminC)
+```
+
+    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+    ##    14.0   192.0   202.0   180.7   211.0   267.0     400
+
+Los valores de más de 100 C se asumen son valores donde no se les puso el decimal, por lo que hay que hacer una función que seleccione esos valores y los divida entre 10.
+
+``` r
+deci <- function(x) {
+  ifelse (x > 100, x/10, x)
+}
+```
+
+Se aplica la función a las columnas TmaxC y TminC:
+
+``` r
+Pitilla$TmaxC <- deci(Pitilla$TmaxC)
+Pitilla$TminC <- deci(Pitilla$TminC)
+```
+
+Comprobar cambios con nuevos histogramas:
+
+``` r
+ggplot(Pitilla) + geom_histogram(aes(x=TminC), binwidth = 1) + 
+  labs(x = "Temperatura mínima diaria", y = "Conteo de registros")
+```
+
+![](DatosClimaticos_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-50-1.png)
+
+``` r
+ggplot(Pitilla) + geom_histogram(aes(x=TmaxC), binwidth = 1) +
+  labs(x = "Temperatura máxima diaria", y = "Conteo de registros")
+```
+
+![](DatosClimaticos_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-51-1.png)
+
+``` r
+summary(Pitilla$TminC)
+```
+
+    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+    ##   10.10   19.60   20.40   20.34   21.15   26.70     400
+
+``` r
+summary(Pitilla$TmaxC)
+```
+
+    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+    ##    6.00   21.70   23.80   23.53   25.80  287.20     150

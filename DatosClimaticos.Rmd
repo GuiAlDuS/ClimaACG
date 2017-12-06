@@ -6,6 +6,7 @@ output:
 always_allow_html: yes
 ---
 
+
 ```{r message=FALSE, warning=FALSE}
 rm(list = ls())
 ```
@@ -18,7 +19,7 @@ library("lubridate")
 library("ggplot2")
 library("plotly")
 ```
-##Estación Santa Rosa##
+##1 Estación Santa Rosa
 
 A leer GoogleSheet con los datos del ACG y cargar datos de Estación Santa Rosa:
 ```{r}
@@ -125,7 +126,7 @@ summary(SantaRosa$TmaxC)
 ```
 
 
-#Estadísticas generales para los años con datos completos o casi completos#
+#Estadísticas generales para los años con datos completos o casi completos
 
 Hacer vector con los años que se tienen datos completos:
 ```{r}
@@ -169,7 +170,7 @@ SantaRosa_AnnosCompletos %>% select(fecha, Lluvia, TmaxC, TminC)%>% arrange(Tmin
 ```
 
 
-#Gráficos#
+#Gráficos
 
 Ordenar por fecha:
 ```{r}
@@ -211,7 +212,7 @@ SantaRosa_final <- select(SantaRosa_AnnosCompletos, fecha, TmaxC, TminC, Lluvia)
 write_csv(SantaRosa_final, "SantaRosa.csv")
 ```
 
-##Estación Pitilla##
+##2 Estación Pitilla
 Leer GoogleSheetes para esta estación:
 ```{r}
 Pitilla <- SR %>% gs_read(ws = "Pitilla")

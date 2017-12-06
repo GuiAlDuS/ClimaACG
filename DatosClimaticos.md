@@ -13,8 +13,8 @@ library("ggplot2")
 library("plotly")
 ```
 
-Estación Santa Rosa
--------------------
+1 Estación Santa Rosa
+---------------------
 
 A leer GoogleSheet con los datos del ACG y cargar datos de Estación Santa Rosa:
 
@@ -392,8 +392,8 @@ SantaRosa_final <- select(SantaRosa_AnnosCompletos, fecha, TmaxC, TminC, Lluvia)
 write_csv(SantaRosa_final, "SantaRosa.csv")
 ```
 
-Estación Pitilla
-----------------
+2 Estación Pitilla
+------------------
 
 Leer GoogleSheetes para esta estación:
 
